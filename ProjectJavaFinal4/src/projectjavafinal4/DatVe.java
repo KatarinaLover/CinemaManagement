@@ -35,8 +35,10 @@ public class DatVe extends javax.swing.JFrame {
     private double vipPrice = 0.0;
     private double regularPrice = 0.0;
     private double totalPrice = 0.0;
-
+    private boolean daMuaVe = false;
     CardLayout cardLayout;
+    // Khai báo biến tạm để lưu trữ tổng giá trị trước khi reset
+    private double tempTotalPrice;
 
     public DatVe() {
         initComponents();
@@ -644,7 +646,7 @@ public class DatVe extends javax.swing.JFrame {
             public void stateChanged(ChangeEvent e) {
                 vipCount = (Integer) jSpinner1.getValue();
                 updateVipPrice();
-                updateTotalPrice();
+                updateTotalPrice(); // Cập nhật tổng giá trị khi số lượng vé VIP thay đổi
             }
         });
 
@@ -653,7 +655,7 @@ public class DatVe extends javax.swing.JFrame {
             public void stateChanged(ChangeEvent e) {
                 regularCount = (Integer) jSpinner2.getValue();
                 updateRegularPrice();
-                updateTotalPrice();
+                updateTotalPrice(); // Cập nhật tổng giá trị khi số lượng vé thường thay đổi
             }
         });
     }
@@ -720,7 +722,12 @@ public class DatVe extends javax.swing.JFrame {
 
     private void btnMuaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMuaActionPerformed
         // Tính toán lại tổng giá trị khi mua
+        vipPrice = vipUnitPrice * vipCount;
+        regularPrice = regularUnitPrice * regularCount;
         totalPrice = vipPrice + regularPrice;
+
+        // Lưu trữ giá trị totalPrice vào biến tạm
+        tempTotalPrice = totalPrice;
 
         // Cập nhật lại các JLabel hiển thị
         jLabel10.setText("$" + String.format("%.2f", vipPrice));
@@ -729,6 +736,7 @@ public class DatVe extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Vui lòng chọn ít nhất một vé trước khi mua.");
             return; // Không tiếp tục thực hiện hành động mua
         }
+
         // Hiển thị thông báo thành công
         JOptionPane.showMessageDialog(this, "Bạn đã mua vé thành công!");
 
@@ -755,7 +763,30 @@ public class DatVe extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void btnHoaDonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHoaDonActionPerformed
-        // TODO add your handling code here:
+        // Kiểm tra nếu đã mua vé
+        if (tempTotalPrice == 0) {
+            JOptionPane.showMessageDialog(this, "Chỉ xuất hóa đơn sau khi mua vé.");
+            return;
+        }
+
+        // Lấy thông tin từ giao diện người dùng
+        String tenPhim = txtTenPhim.getText();
+        String theLoai = txtTheLoai.getText();
+        String ngayChieu = txtNgayChieu.getText();
+
+        // Sử dụng giá trị từ biến tạm thay vì totalPrice hiện tại
+        double tongTien = tempTotalPrice;
+
+        // Tạo chuỗi hóa đơn và hiển thị cho người dùng
+        String hoaDon = "HÓA ĐƠN\n"
+                + "---------------------\n"
+                + "Tên phim: " + tenPhim + "\n"
+                + "Thể loại: " + theLoai + "\n"
+                + "Ngày chiếu: " + ngayChieu + "\n"
+                + "Tổng tiền: $" + String.format("%.2f", tongTien) + "\n"
+                + "---------------------\n";
+
+        JOptionPane.showMessageDialog(this, hoaDon, "Hóa đơn", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_btnHoaDonActionPerformed
 
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
