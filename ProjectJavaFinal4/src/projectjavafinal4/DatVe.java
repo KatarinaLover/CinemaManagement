@@ -4,6 +4,11 @@
  */
 package projectjavafinal4;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.awt.CardLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -27,7 +32,11 @@ import javax.swing.event.ChangeListener;
  * @author LENOVO
  */
 public class DatVe extends javax.swing.JFrame {
-
+    
+    private database database;
+    private Connection connect;
+    private PreparedStatement prepare;
+    private ResultSet result;
     private int vipCount = 0;
     private int regularCount = 0;
     private final double vipUnitPrice = 15.00;
@@ -44,6 +53,7 @@ public class DatVe extends javax.swing.JFrame {
         initComponents();
         addSpinnerListeners();
         cardLayout = (CardLayout) (pnlCards.getLayout());
+        database = new database(); // Khởi tạo đối tượng Database
     }
 
     /**
@@ -739,6 +749,13 @@ public class DatVe extends javax.swing.JFrame {
 
         // Hiển thị thông báo thành công
         JOptionPane.showMessageDialog(this, "Bạn đã mua vé thành công!");
+        // Lấy thông tin phim
+        String tenPhim = txtTenPhim.getText();
+        String theLoai = txtTheLoai.getText();
+        String ngayChieu = txtNgayChieu.getText();
+
+        // Lưu hóa đơn vào cơ sở dữ liệu
+        database.saveBill(tenPhim, theLoai, ngayChieu, totalPrice);
 
         // Reset các Spinner về 0 nếu muốn
         jSpinner1.setValue(0);
